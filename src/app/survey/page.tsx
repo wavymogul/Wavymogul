@@ -3,11 +3,12 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { MultiStepSurvey } from "@/components/survey/MultiStepSurvey";
+import { SurveyIntro } from "@/components/survey/SurveyIntro";
 
 export const metadata: Metadata = {
-  title: "Help Shape SoMingle — Research Survey",
+  title: "Welcome to the SoMingle Experience",
   description:
-    "We're not guessing what people want. We're asking. Take the SoMingle research survey and help build the future of social experiences.",
+    "Choose your vibe. Find your tribe. The world's first Trusted Live Intelligence System that powers criteria-curated social experiences. Your anonymous responses help shape the room.",
 };
 
 export default function SurveyPage() {
@@ -33,16 +34,7 @@ export default function SurveyPage() {
           </Link>
         </div>
 
-        <div className="mb-9 text-center">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Help Shape{" "}
-            <span className="gradient-text">SoMingle</span>
-          </h1>
-          <p className="mx-auto mt-3 max-w-md text-white/60">
-            We&apos;re not guessing what people want. We&apos;re asking. Takes
-            about 3 minutes.
-          </p>
-        </div>
+        <SurveyIntro />
 
         <MultiStepSurvey />
       </div>
