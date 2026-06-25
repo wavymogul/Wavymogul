@@ -10,6 +10,7 @@ import { Logo } from "./ui/Logo";
 const links = [
   { href: "/#problem", label: "The Problem" },
   { href: "/#vision", label: "Vision" },
+  { href: "/#mission", label: "Mission" },
   { href: "/#testimonials", label: "Community" },
   { href: "/survey", label: "Survey" },
 ];

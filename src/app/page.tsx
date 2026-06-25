@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProblemSection } from "@/components/ProblemSection";
 import { VisionSection } from "@/components/VisionSection";
+import { MissionSection } from "@/components/MissionSection";
 import { SurveyCTA } from "@/components/SurveyCTA";
 import { Testimonials } from "@/components/Testimonials";
 import { WaitlistSection } from "@/components/WaitlistSection";
@@ -15,6 +16,7 @@ export default function HomePage() {
         <Hero />
         <ProblemSection />
         <VisionSection />
+        <MissionSection />
         <SurveyCTA />
         <Testimonials />
         <WaitlistSection />
