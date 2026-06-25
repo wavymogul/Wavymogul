@@ -49,13 +49,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - Landing page: `/`
 - Research survey: `/survey`
-- Admin dashboard: `/admin` (uses `ADMIN_PASSWORD`, default `somingle-admin`)
+- Admin dashboard: `/admin` (default login `admin` / `Miller31!`)
 
 ## ⚙️ Configuration
 
 | Variable               | Description                                          | Default               |
 | ---------------------- | ---------------------------------------------------- | --------------------- |
-| `ADMIN_PASSWORD`       | Password for the `/admin` dashboard.                 | `somingle-admin`      |
+| `ADMIN_USERNAME`       | Username for the `/admin` dashboard.                 | `admin`               |
+| `ADMIN_PASSWORD`       | Password for the `/admin` dashboard.                 | `Miller31!`           |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO metadata & sitemap. | `https://somingle.netlify.app` |
 | `SOMINGLE_DB_PATH`     | (Local dev only) location for the JSON fallback store.| `./data`             |
 
@@ -74,7 +75,8 @@ This repo is preconfigured for Netlify via `netlify.toml` and
    existing project** → connect GitHub → pick this repository.
 3. Netlify auto-detects the settings from `netlify.toml` (build command
    `npm run build`, Next.js runtime plugin). Leave them as-is.
-4. Under **Environment variables**, add `ADMIN_PASSWORD` (and optionally
+4. Under **Environment variables**, optionally override `ADMIN_USERNAME` /
+   `ADMIN_PASSWORD` (and optionally
    `NEXT_PUBLIC_SITE_URL`).
 5. Click **Deploy**. Every push to the production branch redeploys automatically.
 
