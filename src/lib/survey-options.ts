@@ -85,4 +85,57 @@ export const ROLE_OPTIONS = [
   "Volunteer",
 ];
 
+export const VIBE_WORDS = [
+  "Creative",
+  "Ambitious",
+  "Calm",
+  "Funny",
+  "Spiritual",
+  "Adventurous",
+  "Authentic",
+  "Social",
+  "Independent",
+  "Curious",
+  "Kind",
+  "Intellectual",
+  "Stylish",
+  "Athletic",
+  "Romantic",
+  "Visionary",
+  "Chill",
+  "Energetic",
+  "Supportive",
+  "Open-minded",
+];
+
+export const MAX_VIBE_WORDS = 5;
+
+export const MUSIC_GENRES = [
+  "Afrobeats",
+  "Hip-Hop",
+  "R&B",
+  "House",
+  "Amapiano",
+  "Pop",
+  "Latin / Reggaeton",
+  "EDM",
+  "Techno",
+  "Soul / Funk",
+  "Jazz",
+  "Rock",
+  "Reggae / Dancehall",
+  "Gospel",
+  "Country",
+  "Classical",
+];
+
+export const EVENT_MUSIC = [
+  "High Energy / Dance",
+  "Chill / Lounge",
+  "Open Format (a bit of everything)",
+  "Live Band / Live Music",
+  "Top 40 / Mainstream",
+  "Underground / Genre-specific",
+];
+
 export const YES_NO = ["Yes", "No"];

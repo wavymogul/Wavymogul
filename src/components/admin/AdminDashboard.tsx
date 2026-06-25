@@ -210,33 +210,101 @@ function StatCard({
 }
 
 function Insights({ surveys }: { surveys: SurveyRecord[] }) {
-  const topInterests = useMemo(() => tally(surveys, "experienceInterests"), [
-    surveys,
-  ]);
+  const topInterests = useMemo(
+    () => tally(surveys, "experienceInterests"),
+    [surveys]
+  );
   const topGains = useMemo(() => tally(surveys, "hopingToGain"), [surveys]);
+  const topVibes = useMemo(() => tally(surveys, "vibeWords"), [surveys]);
+  const topGenres = useMemo(() => tally(surveys, "musicGenres"), [surveys]);
+
+  const kpis = useMemo(() => {
+    const avg = (key: "affordabilityImportance" | "musicImportance") => {
+      if (surveys.length === 0) return "—";
+      const sum = surveys.reduce((a, s) => a + (Number(s[key]) || 0), 0);
+      return (sum / surveys.length).toFixed(1);
+    };
+    return {
+      affordability: avg("affordabilityImportance"),
+      music: avg("musicImportance"),
+      topCity: mode(surveys.map((s) => s.city)),
+      topMeeting: mode(surveys.map((s) => s.meetingPreference)),
+      djPct:
+        surveys.length === 0
+          ? "—"
+          : `${Math.round(
+              (surveys.filter((s) => s.attendForDj === "Yes").length /
+                surveys.length) *
+                100
+            )}%`,
+    };
+  }, [surveys]);
 
   if (surveys.length === 0) return null;
 
   return (
-    <div className="mt-4 grid gap-4 lg:grid-cols-2">
-      <RankPanel
-        title="Most-wanted experiences"
-        icon={BarChart3}
-        entries={topInterests}
-      />
-      <RankPanel
-        title="What people want to gain"
-        icon={BarChart3}
-        entries={topGains}
-      />
+    <>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <MiniStat label="Avg affordability /10" value={kpis.affordability} />
+        <MiniStat label="Avg music importance /10" value={kpis.music} />
+        <MiniStat label="Most desired city" value={kpis.topCity} />
+        <MiniStat label="Top meeting style" value={kpis.topMeeting} />
+        <MiniStat label="Would attend for the DJ" value={kpis.djPct} />
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <RankPanel
+          title="Most-wanted experiences"
+          icon={BarChart3}
+          entries={topInterests}
+        />
+        <RankPanel
+          title="What people want to gain"
+          icon={BarChart3}
+          entries={topGains}
+        />
+        <RankPanel title="Top vibe words" icon={BarChart3} entries={topVibes} />
+        <RankPanel
+          title="Top music genres"
+          icon={BarChart3}
+          entries={topGenres}
+        />
+      </div>
+    </>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl glass p-4">
+      <div className="truncate font-display text-xl font-bold" title={value}>
+        {value}
+      </div>
+      <div className="mt-1 text-xs text-white/50">{label}</div>
     </div>
   );
 }
 
-function tally(
-  surveys: SurveyRecord[],
-  key: "experienceInterests" | "hopingToGain"
-): [string, number][] {
+// Most common non-empty string value.
+function mode(values: string[]): string {
+  const counts = new Map<string, number>();
+  for (const v of values) {
+    const t = v?.trim();
+    if (t) counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  return sorted[0]?.[0] ?? "—";
+}
+
+type ArrayKey =
+  | "experienceInterests"
+  | "hopingToGain"
+  | "vibeWords"
+  | "musicGenres"
+  | "creatorChallenges"
+  | "rolesInterested";
+
+function tally(surveys: SurveyRecord[], key: ArrayKey): [string, number][] {
   const counts = new Map<string, number>();
   for (const s of surveys) {
     for (const v of s[key]) counts.set(v, (counts.get(v) ?? 0) + 1);
@@ -409,16 +477,23 @@ function SurveyDetail({ s }: { s: SurveyRecord }) {
     ["Interested experiences", s.experienceInterests.join(", ") || "—"],
     ["Motivation to attend", s.motivation || "—"],
     ["Missing in city", s.missingInCity || "—"],
+    ["Vibe words", s.vibeWords?.join(", ") || "—"],
     ["Hoping to gain", s.hopingToGain.join(", ") || "—"],
     ["Meeting preference", s.meetingPreference || "—"],
     ["Affordability (1-10)", String(s.affordabilityImportance)],
     ["Like-minded (1-10)", String(s.likeMindedImportance)],
+    ["Music genres", s.musicGenres?.join(", ") || "—"],
+    ["Preferred event music", s.preferredEventMusic || "—"],
+    ["Music importance (1-10)", String(s.musicImportance ?? "—")],
+    ["Attend for the DJ", s.attendForDj || "—"],
+    ["Discover new DJs", s.discoverDjs || "—"],
     ["Event type", s.eventType || "—"],
     ["Creator challenges", s.creatorChallenges.join(", ") || "—"],
     ["How SoMingle helps", s.howSomingleHelps || "—"],
     ["Dream event", s.dreamEvent || "—"],
     ["Wants early access", s.wantsEarlyAccess || "—"],
     ["Roles interested", s.rolesInterested.join(", ") || "—"],
+    ["Feels like belonging", s.belongingFeeling || "—"],
   ];
   return (
     <div className="grid gap-x-8 gap-y-2 rounded-2xl bg-white/[0.03] p-5 sm:grid-cols-2">

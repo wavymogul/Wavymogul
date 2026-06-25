@@ -10,11 +10,11 @@ export function SurveyIntro() {
           Choose your vibe. Find your tribe.
         </span>
         <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-          Welcome to the{" "}
-          <span className="gradient-text">SoMingle Experience</span>
+          Welcome to{" "}
+          <span className="gradient-text">SoMingle</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-white/70">
-          The world&apos;s first{" "}
+          SoMingle is the world&apos;s first{" "}
           <span className="font-semibold text-white">
             Trusted Live Intelligence System
           </span>{" "}
@@ -25,17 +25,15 @@ export function SurveyIntro() {
       <Reveal delay={0.1}>
         <div className="gradient-border mt-9 rounded-[2rem] glass-strong p-7 sm:p-9">
           <p className="text-center text-white/75">
-            This isn&apos;t just a survey&mdash;it&apos;s how we understand the
-            unique vibe of the room.
+            We believe meaningful connections don&apos;t happen by
+            accident&mdash;they happen when the right people meet in the right
+            environment.
           </p>
           <p className="mt-5 text-center text-white/75">
-            Your anonymous responses help power our{" "}
-            <span className="font-semibold text-white">
-              Trusted Live Intelligence System
-            </span>
-            , allowing us to intelligently curate music, introductions,
-            networking opportunities, activities, and the overall flow of the
-            event.
+            This survey helps us understand what truly makes people feel{" "}
+            <span className="font-semibold text-white">connected, safe, and
+            excited</span>{" "}
+            to show up.
           </p>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -52,26 +50,19 @@ export function SurveyIntro() {
               </span>
             </div>
           </div>
-
-          <p className="mt-7 text-center text-sm text-white/60">
-            We don&apos;t use your answers to judge you&mdash;we use them to
-            better understand the collective experience so everyone can have a
-            more meaningful time.
-          </p>
         </div>
       </Reveal>
 
       <Reveal delay={0.15}>
         <div className="mt-9 text-center">
-          <p className="font-display text-base font-semibold sm:text-lg">
-            Built with you. Powered by you.{" "}
-            <span className="gradient-text">By the people, for the people.</span>
-          </p>
-          <p className="mt-4 font-display text-xl font-bold tracking-tight sm:text-2xl">
+          <p className="font-display text-xl font-bold tracking-tight sm:text-2xl">
             Come as you are.{" "}
             <span className="gradient-text animate-shimmer">
               Let&apos;s be real again.
             </span>
+          </p>
+          <p className="mt-3 font-display text-base font-semibold text-white/80">
+            For us. By us.
           </p>
         </div>
       </Reveal>

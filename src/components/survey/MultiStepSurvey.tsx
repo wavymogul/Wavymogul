@@ -22,8 +22,12 @@ import {
   AGE_RANGES,
   STATUS_OPTIONS,
   EXPERIENCE_INTERESTS,
+  VIBE_WORDS,
+  MAX_VIBE_WORDS,
   GAIN_OPTIONS,
   MEETING_PREFERENCES,
+  MUSIC_GENRES,
+  EVENT_MUSIC,
   EVENT_TYPES,
   CREATOR_CHALLENGES,
   ROLE_OPTIONS,
@@ -48,10 +52,16 @@ const emptyForm: SurveyPayload = {
   experienceInterests: [],
   motivation: "",
   missingInCity: "",
+  vibeWords: [],
   hopingToGain: [],
   meetingPreference: "",
   affordabilityImportance: 5,
   likeMindedImportance: 5,
+  musicGenres: [],
+  preferredEventMusic: "",
+  musicImportance: 5,
+  attendForDj: "",
+  discoverDjs: "",
   hostsEvents: "",
   eventType: "",
   creatorChallenges: [],
@@ -59,6 +69,7 @@ const emptyForm: SurveyPayload = {
   dreamEvent: "",
   wantsEarlyAccess: "",
   rolesInterested: [],
+  belongingFeeling: "",
 };
 
 const STEPS = [
@@ -74,9 +85,19 @@ const STEPS = [
     subtitle: "The experiences you'd actually show up for.",
   },
   {
+    id: "vibe",
+    title: "Your Vibe",
+    subtitle: "Choose up to 5 words that feel like you.",
+  },
+  {
     id: "connection",
     title: "Connection Style",
     subtitle: "How you like to meet people.",
+  },
+  {
+    id: "music",
+    title: "Music",
+    subtitle: "The soundtrack to the room. (SoMingle × Yo DJ)",
   },
   {
     id: "creator",
@@ -153,11 +174,16 @@ export function MultiStepSurvey() {
         <div className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gradient">
           <PartyPopper size={30} />
         </div>
-        <h2 className="font-display text-3xl font-bold">Thank you. Truly.</h2>
+        <h2 className="font-display text-3xl font-bold">
+          You&apos;re helping redefine how the world connects.
+        </h2>
         <p className="mx-auto mt-4 max-w-md text-white/65">
-          Your answers go straight into how we design SoMingle. We&apos;re not
-          guessing what people want — we&apos;re building around what you just
-          told us.
+          Every answer helps build more authentic communities, better
+          experiences, and stronger relationships. Thank you for helping us
+          remember how to be real again.
+        </p>
+        <p className="mx-auto mt-3 max-w-md text-sm text-white/45">
+          We&apos;ll keep you updated as SoMingle grows.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
@@ -186,7 +212,7 @@ export function MultiStepSurvey() {
       <div className="mb-8">
         <div className="mb-2 flex items-center justify-between text-xs text-white/50">
           <span className="font-semibold uppercase tracking-wider text-brand-purple">
-            Step {step + 1} of {STEPS.length}
+            Section {step + 1} of {STEPS.length}
           </span>
           <span>{Math.round(progress)}% complete</span>
         </div>
@@ -220,9 +246,11 @@ export function MultiStepSurvey() {
             {step === 0 && <StepAbout form={form} set={set} />}
             {step === 1 && <StepRealTalk form={form} set={set} />}
             {step === 2 && <StepWant form={form} set={set} />}
-            {step === 3 && <StepConnection form={form} set={set} />}
-            {step === 4 && <StepCreator form={form} set={set} />}
-            {step === 5 && <StepFuture form={form} set={set} />}
+            {step === 3 && <StepVibe form={form} set={set} />}
+            {step === 4 && <StepConnection form={form} set={set} />}
+            {step === 5 && <StepMusic form={form} set={set} />}
+            {step === 6 && <StepCreator form={form} set={set} />}
+            {step === 7 && <StepFuture form={form} set={set} />}
           </motion.div>
         </AnimatePresence>
 
@@ -427,6 +455,34 @@ function StepWant({ form, set }: StepProps) {
   );
 }
 
+function StepVibe({ form, set }: StepProps) {
+  const remaining = MAX_VIBE_WORDS - form.vibeWords.length;
+  return (
+    <>
+      <Field
+        label="Choose 5 words"
+        hint={
+          remaining > 0
+            ? `(${remaining} more)`
+            : "(5 of 5 — tap one to swap)"
+        }
+      >
+        <CheckboxGroup
+          options={VIBE_WORDS}
+          value={form.vibeWords}
+          onChange={(v) => set("vibeWords", v)}
+          columns={2}
+          max={MAX_VIBE_WORDS}
+        />
+      </Field>
+      <p className="rounded-2xl bg-white/5 px-4 py-3 text-xs text-white/45">
+        Your vibe helps us understand the energy of the room — and who you&apos;ll
+        click with.
+      </p>
+    </>
+  );
+}
+
 function StepConnection({ form, set }: StepProps) {
   return (
     <>
@@ -456,6 +512,51 @@ function StepConnection({ form, set }: StepProps) {
         <ScaleInput
           value={form.likeMindedImportance}
           onChange={(v) => set("likeMindedImportance", v)}
+        />
+      </Field>
+    </>
+  );
+}
+
+function StepMusic({ form, set }: StepProps) {
+  return (
+    <>
+      <Field label="Favorite genres" hint="(select all that apply)">
+        <CheckboxGroup
+          options={MUSIC_GENRES}
+          value={form.musicGenres}
+          onChange={(v) => set("musicGenres", v)}
+          columns={2}
+        />
+      </Field>
+      <Field label="Preferred event music">
+        <RadioGroup
+          options={EVENT_MUSIC}
+          value={form.preferredEventMusic}
+          onChange={(v) => set("preferredEventMusic", v)}
+          columns={2}
+        />
+      </Field>
+      <Field label="How important is music to your experience?">
+        <ScaleInput
+          value={form.musicImportance}
+          onChange={(v) => set("musicImportance", v)}
+        />
+      </Field>
+      <Field label="Would you attend an event because of the DJ?">
+        <RadioGroup
+          options={YES_NO}
+          value={form.attendForDj}
+          onChange={(v) => set("attendForDj", v)}
+          columns={2}
+        />
+      </Field>
+      <Field label="Would you want to discover new DJs?">
+        <RadioGroup
+          options={YES_NO}
+          value={form.discoverDjs}
+          onChange={(v) => set("discoverDjs", v)}
+          columns={2}
         />
       </Field>
     </>
@@ -536,6 +637,19 @@ function StepFuture({ form, set }: StepProps) {
           columns={2}
         />
       </Field>
+
+      <div className="gradient-border mt-2 rounded-2xl p-[1px]">
+        <div className="rounded-2xl bg-ink-900/60 p-5">
+          <Field label="What makes you instantly feel like you belong somewhere?">
+            <TextArea
+              value={form.belongingFeeling}
+              onChange={(e) => set("belongingFeeling", e.target.value)}
+              placeholder="The moment you know you're in the right room…"
+              className="min-h-[120px]"
+            />
+          </Field>
+        </div>
+      </div>
     </>
   );
 }
