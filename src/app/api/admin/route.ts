@@ -5,11 +5,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function authorized(req: NextRequest): boolean {
-  const expected = process.env.ADMIN_PASSWORD || "somingle-admin";
-  const provided =
-    req.headers.get("x-admin-password") ||
-    new URL(req.url).searchParams.get("password");
-  return provided === expected;
+  const expectedUser = process.env.ADMIN_USERNAME || "admin";
+  const expectedPass = process.env.ADMIN_PASSWORD || "Miller31!";
+  const url = new URL(req.url);
+  const user =
+    req.headers.get("x-admin-username") || url.searchParams.get("username");
+  const pass =
+    req.headers.get("x-admin-password") || url.searchParams.get("password");
+  return user === expectedUser && pass === expectedPass;
 }
 
 export async function GET(req: NextRequest) {

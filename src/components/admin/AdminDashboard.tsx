@@ -27,9 +27,11 @@ type AdminData = {
   waitlist: WaitlistRecord[];
 };
 
-const STORAGE_KEY = "somingle_admin_pw";
+const USER_KEY = "somingle_admin_user";
+const PASS_KEY = "somingle_admin_pw";
 
 export function AdminDashboard() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,19 +39,21 @@ export function AdminDashboard() {
   const [data, setData] = useState<AdminData | null>(null);
   const [tab, setTab] = useState<"surveys" | "waitlist">("surveys");
 
-  async function load(pw: string) {
+  async function load(user: string, pw: string) {
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/admin", {
-        headers: { "x-admin-password": pw },
+        headers: { "x-admin-username": user, "x-admin-password": pw },
       });
-      if (res.status === 401) throw new Error("Incorrect password.");
+      if (res.status === 401)
+        throw new Error("Incorrect username or password.");
       if (!res.ok) throw new Error("Failed to load data.");
       const json = (await res.json()) as AdminData;
       setData(json);
       setAuthed(true);
-      sessionStorage.setItem(STORAGE_KEY, pw);
+      sessionStorage.setItem(USER_KEY, user);
+      sessionStorage.setItem(PASS_KEY, pw);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load.");
       setAuthed(false);
@@ -59,10 +63,12 @@ export function AdminDashboard() {
   }
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      setPassword(saved);
-      load(saved);
+    const savedUser = sessionStorage.getItem(USER_KEY);
+    const savedPass = sessionStorage.getItem(PASS_KEY);
+    if (savedUser && savedPass) {
+      setUsername(savedUser);
+      setPassword(savedPass);
+      load(savedUser, savedPass);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -73,7 +79,7 @@ export function AdminDashboard() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            load(password);
+            load(username, password);
           }}
           className="gradient-border w-full max-w-sm rounded-3xl glass-strong p-8"
         >
@@ -88,15 +94,24 @@ export function AdminDashboard() {
           </div>
           <h1 className="font-display text-xl font-bold">Dashboard access</h1>
           <p className="mt-1 text-sm text-white/55">
-            Enter the admin password to view responses.
+            Sign in to view survey responses and analytics.
           </p>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            autoComplete="username"
+            autoFocus
+            className="mt-5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm focus:border-brand-purple/60 focus:outline-none focus:ring-2 focus:ring-brand-purple/25"
+          />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            autoFocus
-            className="mt-5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm focus:border-brand-purple/60 focus:outline-none focus:ring-2 focus:ring-brand-purple/25"
+            autoComplete="current-password"
+            className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm focus:border-brand-purple/60 focus:outline-none focus:ring-2 focus:ring-brand-purple/25"
           />
           {error && <p className="mt-3 text-sm text-brand-pink">{error}</p>}
           <button
@@ -104,7 +119,7 @@ export function AdminDashboard() {
             disabled={loading}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient py-3 text-sm font-semibold disabled:opacity-60"
           >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : "Unlock"}
+            {loading ? <Loader2 size={18} className="animate-spin" /> : "Sign in"}
           </button>
         </form>
       </main>
@@ -121,7 +136,7 @@ export function AdminDashboard() {
           </span>
         </div>
         <button
-          onClick={() => load(password)}
+          onClick={() => load(username, password)}
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-full glass-strong px-4 py-2 text-sm font-medium hover:bg-white/10"
         >
