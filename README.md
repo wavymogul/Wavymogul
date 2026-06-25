@@ -56,7 +56,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Variable               | Description                                          | Default               |
 | ---------------------- | ---------------------------------------------------- | --------------------- |
 | `ADMIN_PASSWORD`       | Password for the `/admin` dashboard.                 | `somingle-admin`      |
-| `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO metadata & sitemap.       | `https://somingle.io` |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO metadata & sitemap. | `https://somingle.netlify.app` |
 | `SOMINGLE_DB_PATH`     | (Local dev only) location for the JSON fallback store.| `./data`             |
 
 > **Storage:** On Netlify, survey and waitlist submissions are written to

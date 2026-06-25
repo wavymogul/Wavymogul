@@ -14,7 +14,7 @@ const sora = Sora({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://somingle.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://somingle.netlify.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
