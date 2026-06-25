@@ -58,10 +58,16 @@ export async function POST(req: NextRequest) {
     experienceInterests: strArr(b.experienceInterests),
     motivation: str(b.motivation),
     missingInCity: str(b.missingInCity),
+    vibeWords: strArr(b.vibeWords).slice(0, 5),
     hopingToGain: strArr(b.hopingToGain),
     meetingPreference: str(b.meetingPreference),
     affordabilityImportance: clampScale(b.affordabilityImportance),
     likeMindedImportance: clampScale(b.likeMindedImportance),
+    musicGenres: strArr(b.musicGenres),
+    preferredEventMusic: str(b.preferredEventMusic),
+    musicImportance: clampScale(b.musicImportance),
+    attendForDj: str(b.attendForDj),
+    discoverDjs: str(b.discoverDjs),
     hostsEvents: str(b.hostsEvents),
     eventType: str(b.eventType),
     creatorChallenges: strArr(b.creatorChallenges),
@@ -69,6 +75,7 @@ export async function POST(req: NextRequest) {
     dreamEvent: str(b.dreamEvent),
     wantsEarlyAccess: str(b.wantsEarlyAccess),
     rolesInterested: strArr(b.rolesInterested),
+    belongingFeeling: str(b.belongingFeeling),
   };
 
   try {

@@ -23,22 +23,33 @@ export type SurveyPayload = {
   motivation: string;
   missingInCity: string;
 
-  // Step 4 — Connection Style
+  // Step 4 — Your Vibe (choose up to 5 words)
+  vibeWords: string[];
+
+  // Step 5 — Connection Style
   hopingToGain: string[];
   meetingPreference: string;
   affordabilityImportance: number; // 1-10
   likeMindedImportance: number; // 1-10
 
-  // Step 5 — Event Creator
+  // Step 6 — Music (SoMingle × Yo DJ)
+  musicGenres: string[];
+  preferredEventMusic: string;
+  musicImportance: number; // 1-10
+  attendForDj: string; // "Yes" | "No"
+  discoverDjs: string; // "Yes" | "No"
+
+  // Step 7 — Event Creator
   hostsEvents: string; // "Yes" | "No"
   eventType: string;
   creatorChallenges: string[];
   howSomingleHelps: string;
 
-  // Step 6 — The Future
+  // Step 8 — The Future (ends emotionally)
   dreamEvent: string;
   wantsEarlyAccess: string; // "Yes" | "No"
   rolesInterested: string[];
+  belongingFeeling: string;
 };
 
 export type SurveyRecord = SurveyPayload & {

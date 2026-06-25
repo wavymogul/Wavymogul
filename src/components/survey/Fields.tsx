@@ -89,16 +89,22 @@ export function CheckboxGroup({
   value,
   onChange,
   columns = 2,
+  max,
 }: {
   options: string[];
   value: string[];
   onChange: (v: string[]) => void;
   columns?: number;
+  max?: number;
 }) {
-  const toggle = (opt: string) =>
-    onChange(
-      value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt]
-    );
+  const atLimit = max != null && value.length >= max;
+  const toggle = (opt: string) => {
+    if (value.includes(opt)) {
+      onChange(value.filter((v) => v !== opt));
+    } else if (!atLimit) {
+      onChange([...value, opt]);
+    }
+  };
 
   return (
     <div
@@ -107,15 +113,19 @@ export function CheckboxGroup({
     >
       {options.map((opt) => {
         const active = value.includes(opt);
+        const disabled = !active && atLimit;
         return (
           <button
             key={opt}
             type="button"
             onClick={() => toggle(opt)}
+            disabled={disabled}
             className={`flex items-center gap-2.5 rounded-2xl border px-4 py-3 text-left text-sm transition-all ${
               active
                 ? "border-brand-purple/60 bg-brand-purple/15 text-white"
-                : "border-white/10 bg-white/5 text-white/75 hover:border-white/25 hover:bg-white/[0.08]"
+                : disabled
+                  ? "cursor-not-allowed border-white/5 bg-white/[0.02] text-white/30"
+                  : "border-white/10 bg-white/5 text-white/75 hover:border-white/25 hover:bg-white/[0.08]"
             }`}
           >
             <span
