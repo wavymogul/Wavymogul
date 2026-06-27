@@ -14,7 +14,7 @@ const columns = [
   {
     heading: "Get Involved",
     links: [
-      { label: "Events", href: "/#vision" },
+      { label: "Events", href: "/events" },
       { label: "Partnerships", href: "/survey" },
       { label: "Contact", href: "mailto:hello@somingle.io" },
     ],

@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { EventsAdmin } from "./EventsAdmin";
 import type { SurveyRecord, WaitlistRecord } from "@/lib/types";
 
 type AdminData = {
@@ -37,7 +38,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState<AdminData | null>(null);
-  const [tab, setTab] = useState<"surveys" | "waitlist">("surveys");
+  const [tab, setTab] = useState<"surveys" | "waitlist" | "events">("surveys");
 
   async function load(user: string, pw: string) {
     setLoading(true);
@@ -176,7 +177,7 @@ export function AdminDashboard() {
 
           <Insights surveys={data.surveys} />
 
-          <div className="mt-8 flex items-center gap-2">
+          <div className="mt-8 flex flex-wrap items-center gap-2">
             <TabButton
               active={tab === "surveys"}
               onClick={() => setTab("surveys")}
@@ -189,13 +190,16 @@ export function AdminDashboard() {
             >
               Waitlist ({data.waitlist.length})
             </TabButton>
+            <TabButton active={tab === "events"} onClick={() => setTab("events")}>
+              Events
+            </TabButton>
           </div>
 
           <div className="mt-4">
-            {tab === "surveys" ? (
-              <SurveyTable surveys={data.surveys} />
-            ) : (
-              <WaitlistTable waitlist={data.waitlist} />
+            {tab === "surveys" && <SurveyTable surveys={data.surveys} />}
+            {tab === "waitlist" && <WaitlistTable waitlist={data.waitlist} />}
+            {tab === "events" && (
+              <EventsAdmin user={username} pass={password} />
             )}
           </div>
         </>

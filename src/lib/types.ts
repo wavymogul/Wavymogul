@@ -57,6 +57,26 @@ export type SurveyRecord = SurveyPayload & {
   createdAt: string;
 };
 
+export type EventPayload = {
+  title: string;
+  description: string;
+  category: string;
+  city: string;
+  venue: string;
+  date: string; // ISO date (yyyy-mm-dd)
+  time: string; // e.g. "9:00 PM"
+  priceFrom: number; // 0 = free
+  imageUrl: string;
+  ticketUrl: string;
+  organizer: string;
+  trending: boolean;
+};
+
+export type EventRecord = EventPayload & {
+  id: number;
+  createdAt: string;
+};
+
 export type WaitlistPayload = {
   name: string;
   email: string;

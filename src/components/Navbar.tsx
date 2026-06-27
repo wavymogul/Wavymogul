@@ -8,10 +8,10 @@ import { ButtonLink } from "./ui/Button";
 import { Logo } from "./ui/Logo";
 
 const links = [
+  { href: "/events", label: "Events" },
   { href: "/#problem", label: "The Problem" },
   { href: "/#vision", label: "Vision" },
   { href: "/#mission", label: "Mission" },
-  { href: "/#testimonials", label: "Community" },
   { href: "/survey", label: "Survey" },
 ];
 
