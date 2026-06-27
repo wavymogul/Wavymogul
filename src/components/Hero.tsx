@@ -48,21 +48,29 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.05 }}
           className="font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl"
         >
-          People Don&apos;t Need More Events.
+          Choose Your Vibe.
           <br />
-          They Need{" "}
-          <span className="gradient-text animate-shimmer">Better Experiences.</span>
+          <span className="gradient-text animate-shimmer">Find Your Tribe.</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="mx-auto mt-7 max-w-2xl text-base text-white/70 sm:text-lg"
+          transition={{ duration: 0.7, delay: 0.12 }}
+          className="mx-auto mt-6 max-w-xl font-display text-lg font-semibold text-white/90 sm:text-xl"
         >
-          Too many events are expensive, forced, awkward, and forgettable.
-          SoMingle is building a better way to connect people through curated
-          experiences, meaningful interactions, and unforgettable moments.
+          Built for you. Guided by trust. Designed for real connection.
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.18 }}
+          className="mx-auto mt-5 max-w-2xl text-base text-white/70 sm:text-lg"
+        >
+          Welcome to SoMingle&mdash;the world&apos;s trusted community layer,
+          where meaningful relationships begin and everyone has the opportunity
+          to find where they belong.
         </motion.p>
 
         <motion.div
