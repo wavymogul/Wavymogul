@@ -19,16 +19,16 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-0 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-brand-radial blur-2xl" />
         <motion.div
-          className="absolute -left-24 top-40 h-72 w-72 rounded-full bg-brand-purple/20 blur-3xl"
+          className="absolute -left-24 top-40 hidden h-72 w-72 rounded-full bg-brand-purple/20 blur-3xl sm:block"
           animate={{ y: [0, 30, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute -right-24 top-24 h-80 w-80 rounded-full bg-brand-pink/20 blur-3xl"
+          className="absolute -right-24 top-24 hidden h-80 w-80 rounded-full bg-brand-pink/20 blur-3xl sm:block"
           animate={{ y: [0, -36, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-brand-gold/10 blur-3xl" />
+        <div className="absolute bottom-0 right-1/3 hidden h-64 w-64 rounded-full bg-brand-gold/10 blur-3xl sm:block" />
       </div>
 
       <div className="mx-auto max-w-4xl px-5 text-center">

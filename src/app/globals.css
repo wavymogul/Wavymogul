@@ -15,7 +15,7 @@
     background-image:
       radial-gradient(50% 40% at 80% -5%, rgba(236, 72, 153, 0.12), transparent 70%),
       radial-gradient(45% 35% at 10% 5%, rgba(99, 102, 241, 0.14), transparent 70%);
-    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
   ::selection {
     @apply bg-brand-purple/40 text-white;
@@ -96,4 +96,42 @@ input[type="range"]::-moz-range-thumb {
   background: linear-gradient(#a855f7, #6366f1);
   border-radius: 9999px;
   border: 2px solid #06060c;
+}
+
+/*
+ * Mobile performance: backdrop-filter (glassmorphism) is recomputed on every
+ * scroll frame and is the main cause of scroll jank on phones — especially on
+ * the fixed navbar. On small screens we swap the blur for solid backgrounds
+ * that look nearly identical but composite cheaply, and stop the looping
+ * decorative animations.
+ */
+@media (max-width: 768px) {
+  .glass,
+  .glass-strong {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  .glass-strong {
+    background-color: rgba(18, 18, 32, 0.92);
+  }
+  .animate-float,
+  .animate-shimmer,
+  .animate-pulse-glow {
+    animation: none !important;
+  }
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-float,
+  .animate-shimmer,
+  .animate-pulse-glow {
+    animation: none !important;
+  }
 }
