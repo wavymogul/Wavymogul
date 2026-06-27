@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Search, MapPin, Loader2, CalendarX } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Search, MapPin, Loader2, CalendarX, LocateFixed } from "lucide-react";
 import { EventCard } from "./EventCard";
+import { nearestCity } from "@/lib/geo";
 import type { EventRecord } from "@/lib/types";
 
 export function EventsBrowser() {
@@ -11,6 +12,9 @@ export function EventsBrowser() {
   const [city, setCity] = useState("All");
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [locatedCity, setLocatedCity] = useState<string | null>(null);
+  const [geoTried, setGeoTried] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -34,6 +38,37 @@ export function EventsBrowser() {
     () => ["All", ...Array.from(new Set(events.map((e) => e.city).filter(Boolean))).sort()],
     [events]
   );
+
+  const detectLocation = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const avail = cities.filter((c) => c !== "All");
+        const match = nearestCity(
+          pos.coords.latitude,
+          pos.coords.longitude,
+          avail
+        );
+        if (match) {
+          setCity(match);
+          setLocatedCity(match);
+        } else {
+          setLocatedCity("__none__");
+        }
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { timeout: 8000, maximumAge: 600000 }
+    );
+  }, [cities]);
+
+  // Auto-detect once, after events (and therefore the available cities) load.
+  useEffect(() => {
+    if (geoTried || events.length === 0) return;
+    setGeoTried(true);
+    detectLocation();
+  }, [events, geoTried, detectLocation]);
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(events.map((e) => e.category).filter(Boolean))).sort()],
     [events]
@@ -72,7 +107,7 @@ export function EventsBrowser() {
               className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:border-brand-purple/60 focus:outline-none focus:ring-2 focus:ring-brand-purple/25"
             />
           </div>
-          <div className="relative sm:w-56">
+          <div className="relative sm:w-52">
             <MapPin
               size={18}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
@@ -89,7 +124,35 @@ export function EventsBrowser() {
               ))}
             </select>
           </div>
+          <button
+            type="button"
+            onClick={detectLocation}
+            disabled={locating}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl glass-strong px-4 py-3 text-sm font-medium text-white/80 transition-colors hover:text-white disabled:opacity-60"
+            title="Use my location"
+          >
+            {locating ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <LocateFixed size={16} className="text-brand-pink" />
+            )}
+            Near me
+          </button>
         </div>
+
+        {locatedCity && locatedCity !== "__none__" && (
+          <p className="flex items-center gap-1.5 text-sm text-white/55">
+            <LocateFixed size={14} className="text-brand-pink" />
+            Showing events near{" "}
+            <span className="font-semibold text-white">{locatedCity}</span>
+          </p>
+        )}
+        {locatedCity === "__none__" && (
+          <p className="text-sm text-white/45">
+            We couldn&apos;t find events right near you — browse all locations
+            below.
+          </p>
+        )}
 
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => {
