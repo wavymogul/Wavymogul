@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Instagram, Linkedin, Youtube, Mail, Music2 } from "lucide-react";
+import { Instagram, Linkedin, Youtube, Mail, Music2, Lock } from "lucide-react";
 import { Logo } from "./ui/Logo";
 
 const columns = [
@@ -88,13 +88,22 @@ export function Footer() {
           <p className="text-xs text-white/40">
             © {new Date().getFullYear()} SoMingle. All rights reserved.
           </p>
-          <a
-            href="mailto:hello@somingle.io"
-            className="inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white"
-          >
-            <Mail size={16} />
-            hello@somingle.io
-          </a>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white"
+            >
+              <Lock size={15} />
+              Admin
+            </Link>
+            <a
+              href="mailto:hello@somingle.io"
+              className="inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white"
+            >
+              <Mail size={16} />
+              hello@somingle.io
+            </a>
+          </div>
         </div>
       </div>
     </footer>
