@@ -6,6 +6,8 @@ import type {
   SurveyRecord,
   WaitlistPayload,
   WaitlistRecord,
+  EventPayload,
+  EventRecord,
 } from "./types";
 
 /**
@@ -19,6 +21,7 @@ import type {
 
 const SURVEY_STORE = "somingle-surveys";
 const WAITLIST_STORE = "somingle-waitlist";
+const EVENT_STORE = "somingle-events";
 
 function blobsEnabled(): boolean {
   return (
@@ -196,4 +199,46 @@ export async function getWaitlist(): Promise<WaitlistRecord[]> {
     ? await blobAll<WaitlistRecord>(WAITLIST_STORE)
     : readFile<WaitlistRecord>("waitlist.json");
   return rows.sort((a, b) => b.id - a.id);
+}
+
+// -------------------------------------------------------------------- events
+
+export async function insertEvent(p: EventPayload): Promise<EventRecord> {
+  const record: EventRecord = {
+    id: nextId(),
+    createdAt: new Date().toISOString(),
+    ...p,
+  };
+  if (blobsEnabled()) {
+    await getStore(EVENT_STORE).setJSON(surveyKey(record.id), record);
+  } else {
+    const rows = readFile<EventRecord>("events.json");
+    rows.push(record);
+    writeFile("events.json", rows);
+  }
+  return record;
+}
+
+// Sort upcoming-first: trending events float to the top, then by event date.
+function sortEvents(rows: EventRecord[]): EventRecord[] {
+  return rows.sort((a, b) => {
+    if (a.trending !== b.trending) return a.trending ? -1 : 1;
+    return a.date.localeCompare(b.date);
+  });
+}
+
+export async function getStoredEvents(): Promise<EventRecord[]> {
+  const rows = blobsEnabled()
+    ? await blobAll<EventRecord>(EVENT_STORE)
+    : readFile<EventRecord>("events.json");
+  return sortEvents(rows);
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  if (blobsEnabled()) {
+    await getStore(EVENT_STORE).delete(surveyKey(id));
+  } else {
+    const rows = readFile<EventRecord>("events.json").filter((r) => r.id !== id);
+    writeFile("events.json", rows);
+  }
 }

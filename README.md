@@ -16,6 +16,10 @@ waitlist capture flow, and an admin dashboard for reviewing responses.
   CTA, testimonial wall, and waitlist capture.
 - **6-step research survey** (`/survey`) with an animated progress bar,
   conditional questions, checkboxes, scale sliders, and validation.
+- **Events** (`/events`) — an Eventbrite-style browser for trending parties and
+  experiences, with location + category filters and a "trending" sort. Managed
+  from the admin dashboard; ships with curated sample events until real ones are
+  published.
 - **Waitlist system** with idempotent email capture.
 - **Admin dashboard** (`/admin`) — password-gated, with live stats, insight
   charts (most-wanted experiences, desired outcomes), full response detail
