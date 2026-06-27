@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Plus, Trash2, TrendingUp } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, TrendingUp, X } from "lucide-react";
 import { EVENT_CATEGORIES } from "@/lib/events-data";
 import type { EventRecord } from "@/lib/types";
 
@@ -28,6 +28,7 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
   const [isSample, setIsSample] = useState(false);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -54,25 +55,58 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
     reload();
   }, [reload]);
 
-  async function create(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
     try {
+      const editing = editingId != null;
       const res = await fetch("/api/events", {
-        method: "POST",
+        method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({ ...form, priceFrom: Number(form.priceFrom) || 0 }),
+        body: JSON.stringify({
+          ...form,
+          priceFrom: Number(form.priceFrom) || 0,
+          ...(editing ? { id: editingId } : {}),
+        }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create event.");
+      if (!res.ok) throw new Error(data.error || "Failed to save event.");
       setForm(emptyForm);
+      setEditingId(null);
       await reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create event.");
+      setError(err instanceof Error ? err.message : "Failed to save event.");
     } finally {
       setSaving(false);
     }
+  }
+
+  function startEdit(ev: EventRecord) {
+    setEditingId(ev.id);
+    setError("");
+    setForm({
+      title: ev.title,
+      description: ev.description,
+      category: ev.category || EVENT_CATEGORIES[0],
+      city: ev.city,
+      venue: ev.venue,
+      date: ev.date,
+      time: ev.time,
+      priceFrom: ev.priceFrom ? String(ev.priceFrom) : "",
+      imageUrl: ev.imageUrl,
+      ticketUrl: ev.ticketUrl === "#" ? "" : ev.ticketUrl,
+      organizer: ev.organizer,
+      trending: ev.trending,
+    });
+    if (typeof window !== "undefined")
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
   }
 
   async function remove(id: number) {
@@ -81,6 +115,7 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
       method: "DELETE",
       headers: authHeaders(),
     });
+    if (editingId === id) cancelEdit();
     await reload();
   }
 
@@ -90,10 +125,29 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
       {/* Create form */}
-      <form onSubmit={create} className="h-fit rounded-3xl glass p-5">
-        <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold">
-          <Plus size={18} className="text-brand-pink" /> Add event
-        </h3>
+      <form onSubmit={save} className="h-fit rounded-3xl glass p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 font-display text-lg font-semibold">
+            {editingId != null ? (
+              <>
+                <Pencil size={18} className="text-brand-gold" /> Edit event
+              </>
+            ) : (
+              <>
+                <Plus size={18} className="text-brand-pink" /> Add event
+              </>
+            )}
+          </h3>
+          {editingId != null && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="inline-flex items-center gap-1 text-xs text-white/55 hover:text-white"
+            >
+              <X size={14} /> Cancel
+            </button>
+          )}
+        </div>
         <div className="space-y-3">
           <input
             className={inputCls}
@@ -190,7 +244,13 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
             disabled={saving}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient py-2.5 text-sm font-semibold disabled:opacity-60"
           >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : "Publish event"}
+            {saving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : editingId != null ? (
+              "Save changes"
+            ) : (
+              "Publish event"
+            )}
           </button>
         </div>
       </form>
@@ -237,13 +297,24 @@ export function EventsAdmin({ user, pass }: { user: string; pass: string }) {
                   </p>
                 </div>
                 {!isSample && (
-                  <button
-                    onClick={() => remove(ev.id)}
-                    className="shrink-0 rounded-xl p-2 text-white/50 transition-colors hover:bg-brand-pink/15 hover:text-brand-pink"
-                    aria-label="Delete event"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      onClick={() => startEdit(ev)}
+                      className={`rounded-xl p-2 transition-colors hover:bg-white/10 hover:text-white ${
+                        editingId === ev.id ? "text-brand-gold" : "text-white/50"
+                      }`}
+                      aria-label="Edit event"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => remove(ev.id)}
+                      className="rounded-xl p-2 text-white/50 transition-colors hover:bg-brand-pink/15 hover:text-brand-pink"
+                      aria-label="Delete event"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 )}
               </div>
             ))}

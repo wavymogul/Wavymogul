@@ -234,6 +234,29 @@ export async function getStoredEvents(): Promise<EventRecord[]> {
   return sortEvents(rows);
 }
 
+export async function updateEvent(
+  id: number,
+  payload: EventPayload
+): Promise<EventRecord | null> {
+  if (blobsEnabled()) {
+    const store = getStore(EVENT_STORE);
+    const key = surveyKey(id);
+    const existing = (await store.get(key, {
+      type: "json",
+    })) as EventRecord | null;
+    if (!existing) return null;
+    const updated: EventRecord = { ...existing, ...payload, id, createdAt: existing.createdAt };
+    await store.setJSON(key, updated);
+    return updated;
+  }
+  const rows = readFile<EventRecord>("events.json");
+  const idx = rows.findIndex((r) => r.id === id);
+  if (idx < 0) return null;
+  rows[idx] = { ...rows[idx], ...payload, id, createdAt: rows[idx].createdAt };
+  writeFile("events.json", rows);
+  return rows[idx];
+}
+
 export async function deleteEvent(id: number): Promise<void> {
   if (blobsEnabled()) {
     await getStore(EVENT_STORE).delete(surveyKey(id));
