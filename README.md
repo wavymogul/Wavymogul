@@ -20,6 +20,10 @@ waitlist capture flow, and an admin dashboard for reviewing responses.
   experiences, with location + category filters and a "trending" sort. Managed
   from the admin dashboard; ships with curated sample events until real ones are
   published.
+- **Vibe matching** — opt-in **Spotify connect** builds a taste profile (top
+  genres + energy/danceability/valence) and re-ranks events into "Top picks for
+  you" with a per-event match score. Falls back to a "coming soon" placeholder
+  until Spotify credentials are configured.
 - **Waitlist system** with idempotent email capture.
 - **Admin dashboard** (`/admin`) — password-gated, with live stats, insight
   charts (most-wanted experiences, desired outcomes), full response detail

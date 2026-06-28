@@ -1,9 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Search, MapPin, Loader2, CalendarX, LocateFixed } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Loader2,
+  CalendarX,
+  LocateFixed,
+  Music2,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { EventCard } from "./EventCard";
 import { nearestCity } from "@/lib/geo";
+import { rankEvents, type VibeProfile } from "@/lib/vibe";
 import type { EventRecord } from "@/lib/types";
 
 export function EventsBrowser() {
@@ -15,6 +25,48 @@ export function EventsBrowser() {
   const [locating, setLocating] = useState(false);
   const [locatedCity, setLocatedCity] = useState<string | null>(null);
   const [geoTried, setGeoTried] = useState(false);
+
+  // Spotify vibe state
+  const [spotifyConfigured, setSpotifyConfigured] = useState(false);
+  const [profile, setProfile] = useState<VibeProfile | null>(null);
+  const [vibeSort, setVibeSort] = useState(true);
+  const [statusMsg, setStatusMsg] = useState("");
+
+  const loadVibe = useCallback(async () => {
+    try {
+      const res = await fetch("/api/spotify/me");
+      const data = await res.json();
+      setSpotifyConfigured(Boolean(data.configured));
+      setProfile(data.profile ?? null);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    loadVibe();
+  }, [loadVibe]);
+
+  // Surface the outcome of the OAuth round-trip (?spotify=...).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search).get("spotify");
+    if (!p) return;
+    const messages: Record<string, string> = {
+      connected: "🎶 Spotify connected — events are now matched to your vibe.",
+      denied: "Spotify connection was cancelled.",
+      error: "Couldn't connect Spotify. Please try again.",
+      unconfigured: "Spotify connect isn't enabled on this site yet.",
+    };
+    setStatusMsg(messages[p] ?? "");
+    window.history.replaceState({}, "", "/events");
+  }, []);
+
+  async function disconnectSpotify() {
+    await fetch("/api/spotify/logout", { method: "POST" });
+    setProfile(null);
+    setStatusMsg("");
+  }
 
   useEffect(() => {
     let active = true;
@@ -90,8 +142,105 @@ export function EventsBrowser() {
     });
   }, [events, city, category, query]);
 
+  // When a vibe profile is connected and "Top picks" is on, rank by match score.
+  const displayList = useMemo<{ event: EventRecord; score?: number }[]>(() => {
+    if (profile && vibeSort) return rankEvents(profile, filtered);
+    return filtered.map((event) => ({ event, score: undefined }));
+  }, [profile, vibeSort, filtered]);
+
   return (
     <div>
+      {statusMsg && (
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl bg-brand-purple/15 px-4 py-3 text-sm text-white/85">
+          <span>{statusMsg}</span>
+          <button
+            onClick={() => setStatusMsg("")}
+            className="text-white/50 hover:text-white"
+            aria-label="Dismiss"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
+      {/* Vibe / Spotify banner */}
+      {profile ? (
+        <div className="mb-6 rounded-3xl gradient-border glass-strong p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-gradient">
+                <Sparkles size={18} />
+              </div>
+              <div>
+                <p className="font-display text-sm font-semibold">
+                  Matched to your vibe
+                </p>
+                <p className="text-xs text-white/55">
+                  {profile.topGenres.length > 0
+                    ? `Your top vibes: ${profile.topGenres.slice(0, 3).join(", ")}`
+                    : "Based on your Spotify listening"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setVibeSort((v) => !v)}
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
+                  vibeSort
+                    ? "bg-brand-gradient text-white"
+                    : "glass text-white/65 hover:text-white"
+                }`}
+              >
+                Top picks for you
+              </button>
+              <button
+                onClick={disconnectSpotify}
+                className="rounded-full glass px-3 py-2 text-xs text-white/55 hover:text-white"
+              >
+                Disconnect
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : spotifyConfigured ? (
+        <a
+          href="/api/spotify/login"
+          className="group mb-6 flex flex-wrap items-center justify-between gap-4 rounded-3xl gradient-border glass-strong p-5 transition-colors hover:bg-white/[0.08]"
+        >
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1DB954]">
+              <Music2 size={18} className="text-black" />
+            </div>
+            <div>
+              <p className="font-display text-sm font-semibold">
+                Connect Spotify to find your vibe
+              </p>
+              <p className="text-xs text-white/55">
+                We&apos;ll match events to your actual taste in music. Opt-in,
+                never shared.
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full bg-brand-gradient px-4 py-2 text-xs font-semibold text-white transition-transform group-hover:scale-105">
+            Connect Spotify
+          </span>
+        </a>
+      ) : (
+        <div className="mb-6 flex items-center gap-3 rounded-3xl glass p-5">
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
+            <Music2 size={18} className="text-brand-pink" />
+          </div>
+          <div>
+            <p className="font-display text-sm font-semibold">
+              Vibe matching is coming soon
+            </p>
+            <p className="text-xs text-white/55">
+              Connect your music to get events matched to your taste.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Filter bar */}
       <div className="mb-8 flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -198,12 +347,13 @@ export function EventsBrowser() {
       ) : (
         <>
           <p className="mb-5 text-sm text-white/50">
+            {profile && vibeSort ? "Top picks for you · " : ""}
             {filtered.length} event{filtered.length === 1 ? "" : "s"}
             {city !== "All" ? ` in ${city}` : ""}
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((e) => (
-              <EventCard key={e.id} event={e} />
+            {displayList.map(({ event, score }) => (
+              <EventCard key={event.id} event={event} matchScore={score} />
             ))}
           </div>
         </>
