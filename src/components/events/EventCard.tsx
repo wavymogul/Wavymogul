@@ -14,7 +14,13 @@ function formatDate(iso: string): string {
 
 const priceLabel = (n: number) => (n > 0 ? `From $${n}` : "Free");
 
-export function EventCard({ event }: { event: EventRecord }) {
+export function EventCard({
+  event,
+  matchScore,
+}: {
+  event: EventRecord;
+  matchScore?: number;
+}) {
   return (
     <article className="group overflow-hidden rounded-3xl glass transition-all duration-300 hover:-translate-y-1.5 hover:bg-white/[0.07]">
       <div className="relative aspect-[16/10] overflow-hidden bg-white/5">
@@ -36,6 +42,11 @@ export function EventCard({ event }: { event: EventRecord }) {
             </span>
           )}
         </div>
+        {typeof matchScore === "number" && (
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-gradient px-2.5 py-1 text-xs font-bold text-white shadow-lg">
+            {matchScore}% your vibe
+          </span>
+        )}
         <span className="absolute bottom-3 right-3 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
           {priceLabel(event.priceFrom)}
         </span>
